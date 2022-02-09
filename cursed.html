@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <style>
+    div {
+      font-size: 2em;
+    }
+
+    p {
+      font-size: medium;
+    }
+
+    .input {
+      width: 40vw;
+    }
+
+    .options {
+      width: 95vw;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <input type="text" id="in" class="input">
+    <input type="range" min="1" max="100" step="0.1" id="cursedness" class="input">
+  </div>
+  <div class="options" id=options></div>
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  <div id="out"></div>
+
+  <script>
+
+    const lang = {
+      diacritical: {
+        name: "Diacritical",
+        chars: [
+          [768, 879]
+        ],
+        type: "chr"
+      },
+      diacriticalext: {
+        name: "Diacritical Ext",
+        chars: [
+          [6832, 6848]
+        ],
+        type: "chr"
+      },
+      diacriticalsym: {
+        name: "Diacritical Sym",
+        chars: [
+          [8400, 8412],
+          [8421, 8432],
+          8417
+        ],
+        type: "sym"
+      },
+      diacriticalbox: {
+        name: "Diacritical Box",
+        chars: [
+          8413,
+          [8415, 8420]
+        ],
+        type: "box"
+      },
+      diacriticalsup: {
+        name: "Diacritical Sup",
+        chars: [
+          [7616, 7673],
+          [7675, 7679]
+        ],
+        type: "chr"
+      },
+      diacriticalhalf: {
+        name: "Diacritical Half",
+        chars: [
+          [65056, 65071]
+        ],
+        type: "chr"
+      },
+      devanagari: {
+        name: "Devanagari",
+        chars: [
+          [2304, 2306],
+          2362,
+          2364,
+          [2369, 2376],
+          2391,
+          [2385, 2386],
+          [2389, 2391],
+          [2402, 2403]
+        ],
+        type: "sym"
+      },
+      devanagariext: {
+        name: "Devanagari Ext",
+        chars: [
+          [43232, 43249],
+          43263
+        ],
+        type: "chr"
+      },
+      vedicext: {
+        name: "Vedic Ext",
+        chars: [
+          [7376, 7378],
+          [7380, 7391],
+          7394,
+          7405,
+          7412,
+          [7416, 7417]
+        ],
+        type: "sym"
+      },
+      cyrillic: {
+        name: "Cyrillic",
+        chars: [
+          [1155, 1161]
+        ],
+        type: "chr"
+      },
+      cyrillicexta: {
+        name: "Cyrillic Ext A",
+        chars: [
+          [11744, 11775]
+        ],
+        type: "chr"
+      },
+      cyrillicextb: {
+        name: "Cyrillic Ext B",
+        chars: [
+          42607,
+          [42612, 42621],
+          [42654, 42655]
+        ],
+        type: "sym"
+      },
+      cyrillicextbbox: {
+        name: "Cyrillic Ext B Box",
+        chars: [
+          [42608, 42610]
+        ],
+        type: "box"
+      },
+      arabic: {
+        name: "Arabic",
+        chars: [
+          1539,
+          [1552, 1562],
+          [1611, 1632],
+          [1750, 1757],
+          [1759, 1764],
+          1767,
+          [1770, 1773],
+        ],
+        type: "sym"
+      },
+      arabicexta: {
+        name: "Arabic Ext A",
+        chars: [
+          [2259, 2273],
+          [2275, 2302]
+        ],
+        type: "chr"
+      },
+      hebrew: {
+        name: "Hebrew",
+        chars: [
+          [1425, 1469],
+          1471,
+          [1473, 1474],
+          [1476, 1477]
+        ],
+        type: "sym"
+      },
+      mandaic: {
+        name: "Mandaic",
+        chars: [
+          [2137, 2139]
+        ],
+        type: "chr"
+      },
+      samaritan: {
+        name: "Samaritan",
+        chars: [
+          [2070, 2073],
+          [2075, 2083],
+          [2085, 2087],
+          [2089, 2092]
+        ],
+        type: "sym"
+      },
+      syriac: {
+        name: "Syriac",
+        chars: [
+          [1840, 1865]
+        ],
+        type: "sym"
+      },
+      thaana: {
+        name: "Thaana",
+        chars: [
+          [1958, 1968]
+        ],
+        type: "sym"
+      },
+      gurmukhi: {
+        name: "Gurmukhi",
+        chars: [
+          [2561, 2562],
+          2620,
+          [2625, 2626],
+          [2631, 2632],
+          [2635, 2637],
+          2641,
+          [2672, 2673],
+          2677
+        ],
+        type: "sym"
+      },
+      gujarati: {
+        name: "Gujarati",
+        chars: [
+          [2689, 2690],
+          2748,
+          [2753, 2757],
+          [2759, 2760],
+          2765,
+          [2786, 2787],
+          [2810, 2815]
+        ],
+        type: "sym"
+      },
+      oriya: {
+        name: "Oriya",
+        chars: [
+          2817,
+          2876,
+          2879,
+          [2881, 2884],
+          2893,
+          2902,
+          [2914, 2915]
+        ],
+        type: "sym"
+      },
+      tamil: {
+        name: "Tamil",
+        chars: [
+          2946,
+          3008,
+          3021
+        ],
+        type: "sym"
+      },
+      telugu: {
+        name: "Telugu",
+        chars: [
+          3072,
+          3076,
+          [3135, 3136],
+          [3142, 3144],
+          [3146, 3149],
+          [3157, 3158],
+          [3170, 3171]
+        ],
+        type: "sym"
+      },
+      kannada: {
+        name: "Kannada",
+        chars: [
+          3201,
+          3260,
+          3263,
+          [3267, 3268],
+          3270,
+          [3298, 3299]
+        ],
+        type: "sym"
+      },
+      malayalam: {
+        name: "Malayalam",
+        chars: [
+          [3328, 3329],
+          [3387, 3388],
+          3405,
+          [3426, 3427]
+        ],
+        type: "sym"
+      },
+      sinhala: {
+        name: "Sinhala",
+        chars: [
+          3457,
+          3530,
+          [3538, 3540],
+          3542
+        ],
+        type: "sym"
+      },
+      ahom: {
+        name: "Ahom",
+        chars: [
+          0x1171D,
+          0x1171F,
+          [0x11722, 0x11725],
+          [0x11727, 0x1172B]
+        ],
+        type: "sym"
+      },
+      balinese: {
+        name: "Balinese",
+        chars: [
+          [0x1B00, 0x1B03],
+          0x1B34,
+          [0x1B36, 0x1B3A],
+          0x1B3C,
+          0x1B42,
+          [0x1B6B, 0x1B73]
+        ],
+        type: "sym"
+      },
+      batak: {
+        name: "Batak",
+        chars: [
+          0x1BE6,
+          [0x1BE8, 0x1BE9],
+          0x1BED,
+          [0x1BEF, 0x1BF1]
+        ],
+        type: "sym"
+      },
+      bhaiktsuki: {
+        name: "Bhaiktsuki",
+        chars: [
+          [0x11C2F, 0x11C36],
+          [0x11C38, 0x11C3D],
+          0x11C3F
+        ],
+        type: "sym"
+      },
+      brahmi: {
+        name: "Brahmi",
+        chars: [
+          0x11001,
+          [0x11038, 0x11046]
+        ],
+        type: "sym"
+      },
+      buhid: {
+        name: "Buhid",
+        chars: [
+          [0x1752, 0x1753]
+        ],
+        type: "sym"
+      },
+      buginese: {
+        name: "Buginese",
+        chars: [
+          [0x1A17, 0x1A18],
+          0x1A1B
+        ],
+        type: "sym"
+      },
+      chakma: {
+        name: "Charkma",
+        chars: [
+          [0x11100, 0x11102],
+          [0x11127, 0x1112B],
+          [0x1112D, 0x11134]
+        ],
+        type: "sym"
+      },
+      cham: {
+        name: "Cham",
+        chars: [
+          [0xAA29, 0xAA2E],
+          [0xAA31, 0xAA32],
+          [0xAA35, 0xAA36],
+          0xAA43,
+          0xAA4C
+        ],
+        type: "sym"
+      },
+      dogra: {
+        name: "Dogra",
+        chars: [
+          [0x1182F, 0x11837],
+          [0x11839, 0x1183A]
+        ],
+        type: "sym"
+      },
+      grantha: {
+        name: "Grantha",
+        chars: [
+          [0x11300, 0x11301],
+          [0x1133B, 0x1133C],
+          0x11340,
+          0x1134D,
+          [0x11366, 0x1136C],
+          [0x11370, 0x11374]
+        ],
+        type: "sym"
+      },
+      gunjalagondi: {
+        name: "Gunjala Gondi",
+        chars: [
+          [0x11D90, 0x11D91],
+          0x11D95
+        ],
+        type: "sym"
+      },
+      hanunoo: {
+        name: "Hanunoo",
+        chars: [
+          [0x1732, 0x1733]
+        ],
+        type: "chr"
+      },
+      javanese: {
+        name: "Javanese",
+        chars: [
+          [0xA980, 0xA982],
+          0xA9B3,
+          [0xA9B6, 0xA9B9],
+          [0xA9BC, 0xA9BD]
+        ],
+        type: "sym"
+      },
+      kaithi: {
+        name: "Kaithi",
+        chars: [
+          [0x11080, 0x11081],
+          [0x110B3, 0x110B6],
+          [0x110B9, 0x110BA]
+        ],
+        type: "sym"
+      },
+      khmer: {
+        name: "Khmer",
+        chars: [
+          [0x17B7, 0x17BD],
+          0x17C6,
+          0x17CB,
+          [0x17CD, 0x17D3],
+          0x17DD
+        ],
+        type: "sym"
+      },
+      khojki: {
+        name: "Khojki",
+        chars: [
+          [0x1122F, 0x11231],
+          0x11234,
+          [0x11236, 0x11237],
+          0x1123E
+        ],
+        type: "sym"
+      },
+      khudawadi: {
+        name: "Khudawadi",
+        chars: [
+          0x112DF,
+          [0x112E3, 0x112EA]
+        ],
+        type: "sym"
+      },
+      lao: {
+        name: "Lao",
+        chars: [
+          0x0EB1,
+          [0x0EB4, 0x0EBC],
+          [0x0EC8, 0x0ECD]
+        ],
+        type: "sym"
+      },
+      lepcha: {
+        name: "Lepcha",
+        chars: [
+          [0x1C2C, 0x1C33],
+          [0x1C36, 0x1C37]
+        ],
+        type: "sym"
+      },
+      limbu: {
+        name: "Limbu",
+        chars: [
+          [0x1920, 0x1922],
+          [0x1927, 0x1928],
+          0x192A,
+          0x1932,
+          [0x193A, 0x193B]
+        ],
+        type: "sym"
+      },
+      mahajani: {
+        name: "Mahajani",
+        chars: [
+          0x11173
+        ],
+        type: "sym"
+      },
+      marchen: {
+        name: "Marchen",
+        chars: [
+          [0x11C92, 0x11CA7],
+          [0x11CAA, 0x11CB0],
+          [0x11CB2, 0x11CB6]
+        ],
+        type: "sym"
+      },
+      meeteimayek: {
+        name: "Meetei Mayek",
+        chars: [
+          0xABE5,
+          [0xABE8, 0xABEA],
+          0xABED
+        ],
+        type: "sym"
+      },
+      meeteimayekext: {
+        name: "Meetei Mayek Ext",
+        chars: [
+          [0xAAEC, 0xAAED],
+          0xAAF6
+        ],
+        type: "sym"
+      },
+      modi: {
+        name: "Modi",
+        chars: [
+          [0x11633, 0x1163A],
+          0x1163D,
+          [0x1163F, 0x11640]
+        ],
+        type: "sym"
+      },
+      myanmar: {
+        name: "Myanmar",
+        chars: [
+          [0x102D, 0x1030],
+          [0x1032, 0x1037],
+          [0x1039, 0x103A],
+          [0x103D, 0x103E],
+          [0x1058, 0x1059],
+          [0x105E, 0x1060],
+          [0x1071, 0x1074],
+          0x1082,
+          [0x1085, 0x1086],
+          0x109D
+        ],
+        type: "sym"
+      },
+      newa: {
+        name: "Newa",
+        chars: [
+          [0x11438, 0x1143F],
+          [0x11442, 0x11444],
+          0x11446,
+          0x1145E
+        ],
+        type: "sym"
+      },
+      rejang: {
+        name: "Rejang",
+        chars: [
+          0xA948,
+          0xA94A,
+          [0xA94C, 0xA94E],
+          0xA951,
+          0xA953
+        ],
+        type: "sym"
+      },
+      saurashtra: {
+        name: "Saurashtra",
+        chars: [
+          0xA8B6,
+          [0xA8C4, 0xA8C5]
+        ],
+        type: "sym"
+      },
+      sharada: {
+        name: "Sharada",
+        chars: [
+          [0x11180, 0x11181],
+          [0x111B6, 0x111BE],
+          [0x111C9, 0x111CC]
+        ],
+        type: "sym"
+      },
+      siddham: {
+        name: "Siddham",
+        chars: [
+          [0x115B2, 0x115B5],
+          [0x115BC, 0x115BD],
+          [0x115BF, 0x115C0],
+          [0x115DC, 0x115DD]
+        ],
+        type: "chr"
+      },
+      sundanese: {
+        name: "Sundanese",
+        chars: [
+          [0x1B80, 0x1B81],
+          [0x1BA1, 0x1BA5],
+          [0x1BA8, 0x1BA9],
+          [0x1BAC, 0x1BAD]
+        ],
+        type: "sym"
+      },
+      sylotinagri: {
+        name: "Syloti Nagri",
+        chars: [
+          0xA802,
+          0xA806,
+          0xA80B,
+          [0xA825, 0xA826],
+          0xA82C
+        ],
+        type: "sym"
+      },
+      tagalog: {
+        name: "Tagalog",
+        chars: [
+          [0x1712, 0x1714]
+        ],
+        type: "sym"
+      },
+      tagbanwa: {
+        name: "Tagbanwa",
+        chars: [
+          [0x1772, 0x1773]
+        ],
+        type: "sym"
+      },
+      taitham: {
+        name: "Tai Tham",
+        chars: [
+          [0x1A58, 0x1A5E],
+          0x1A62,
+          [0x1A65, 0x1A68],
+          [0x1A6B, 0x1A6C],
+          [0x1A73, 0x1A7C],
+          0x1A7F
+        ],
+        type: "sym"
+      },
+      taiviet: {
+        name: "Tai Viet",
+        chars: [
+          0xAAB0,
+          [0xAAB2, 0xAAB4],
+          [0xAAB7, 0xAAB8],
+          [0xAABE, 0xAABF],
+          0xAAC1
+        ],
+        type: "sym"
+      },
+      takri: {
+        name: "Takri",
+        chars: [
+          0x116AB,
+          0x116AD,
+          [0x116B0, 0x116B7]
+        ],
+        type: "sym"
+      },
+      thai: {
+        name: "Thai",
+        chars: [
+          0x0E31,
+          [0x0E34, 0x0E3A],
+          [0x0E47, 0x0E4E]
+        ],
+        type: "chr"
+      },
+      tibetan: {
+        name: "Tibetan",
+        chars: [
+          [0x0F18, 0x0F19],
+          0x0F35,
+          0x0F37,
+          0x0F39,
+          [0x0F71, 0x0F7E],
+          [0x0F80, 0x0F84],
+          [0x0F86, 0x0F87],
+          [0x0F8D, 0x0F97],
+          [0x0F99, 0x0FBC],
+          0x0FC6
+        ],
+        type: "chr"
+      },
+      tirhuata: {
+        name: "Tirhuta",
+        chars: [
+          [0x114B3, 0x114B8],
+          0x114BA,
+          [0x114BF, 0x114C0],
+          [0x114C2, 0x114C3]
+        ],
+        type: "sym"
+      },
+      masaramgondi: {
+        name: "Masaram Gondi",
+        chars: [
+          0x11D42
+        ],
+        type: "sym"
+      },
+      adlam: {
+        name: "Adlam",
+        chars: [
+          [0x1E944, 0x1E94A]
+        ],
+        type: "sym"
+      },
+      nko: {
+        name: "NKo",
+        chars: [
+          [0x07EB, 0x07F3],
+          0x07FD
+        ],
+        type: "sym"
+      },
+      mongolian: {
+        name: "Mongolian",
+        chars: [
+          0x18A9
+        ],
+        type: "chr"
+      },
+      hiragana: {
+        name: "Hiragana",
+        chars: [
+          [0x3099, 0x309A]
+        ],
+        type: "chr"
+      },
+      miao: {
+        name: "Miao",
+        chars: [
+          0x16F4F,
+        ],
+        type: "chr"
+      },
+      nyiakengpueachuehmong: {
+        name: "Nyiakeng Puachue Hmong",
+        chars: [
+          [0x1E130, 0x1E136]
+        ],
+        type: "sym"
+      },
+      wancho: {
+        name: "Wancho",
+        chars: [
+          [0x1E2EC, 0x1E2EF]
+        ],
+        type: "sym"
+      },
+      hanifirohingya: {
+        name: "Hanifi Rohingya",
+        chars: [
+          [0x10D24, 0x10D27]
+        ],
+        type: "chr"
+      },
+      kayahli: {
+        name: "Kayah Li",
+        chars: [
+          [0xA926, 0xA92D]
+        ],
+        type: "sym"
+      },
+      pahawhhmong: {
+        name: "Pahawh Hmong",
+        chars: [
+          [0x16B30, 0x16B36]
+        ],
+        type: "sym"
+      },
+      glagoloticsup: {
+        name: "Glagolotic Sup",
+        chars: [
+          [0x1E000, 0x1E006],
+          [0x1E008, 0x1E018],
+          [0x1E01B, 0x1E021],
+          [0x1E023, 0x1E024],
+          [0x1E026, 0x1E02A]
+        ],
+        type: "sym"
+      },
+      kharoshthi: {
+        name: "Kharoshthi",
+        chars: [
+          [0x10A01, 0x10A03],
+          [0x10A05, 0x10A06],
+          [0x10A0C, 0x10A0F],
+          [0x10A38, 0x10A3A],
+          0x10A3F
+        ],
+        type: "sym"
+      },
+      manichaean: {
+        name: "Manichaean",
+        chars: [
+          [0x10AE5, 0x10AE6]
+        ],
+        type: "chr"
+      },
+      sogdian: {
+        name: "Sogdian",
+        chars: [
+          [0x10F46, 0x10F50]
+        ],
+        type: "sym"
+      },
+      soyombo: {
+        name: "Soyombo",
+        chars: [
+          [0x11A51, 0x11A56],
+          [0x11A59, 0x11A5B],
+          [0x11A8A, 0x11A96],
+        ],
+        type: "chr"
+      },
+      yezidi: {
+        name: "Yezidi",
+        chars: [
+          [0x10EAB, 0x10EAC]
+        ],
+        type: "sym"
+      },
+      zanabazarsquare: {
+        name: "Zanabazar Square",
+        chars: [
+          [0x11A01, 0x11A0A],
+          [0x11A33, 0x11A38],
+          [0x11A3B, 0x11A3E]
+        ],
+        type: "chr"
+      }
+    }
+
+    const input = document.getElementById("in")
+    const output = document.getElementById("out")
+    const cursed = document.getElementById("cursedness")
+
+    input.addEventListener('input', updateText)
+    cursed.addEventListener('input', updateText)
+    output.addEventListener("input", updateText)
+
+    const options = document.getElementById("options")
+
+    Object.keys(lang).forEach(k => {
+
+      var checkbox = document.createElement("input")
+      checkbox.setAttribute("type", "checkbox")
+      checkbox.setAttribute("id", k)
+
+      options.appendChild(checkbox)
+
+      var label = document.createElement("p")
+      label.innerText = lang[k].name
+      options.appendChild(label)
+    })
+
+    var checkboxs = {}
+    Object.keys(lang).forEach(k => checkboxs[k] = document.getElementById(k))
+
+    Object.values(checkboxs).forEach(cb => cb.addEventListener("input", updateText))
+
+    function updateText() {
+      var text = input.value
+      var cursedness = cursed.value
+      var chr = { chr: [], sym: [], box: [] }
+
+      Object.entries(lang).forEach(val => {
+        const k = val[0]
+        const l = val[1]
+
+        if (checkboxs[k].checked) {
+          l.chars.forEach(char => {
+            if (typeof (char) == "number")
+              chr[l.type].push(fromCharCode(char))
+            if (typeof (char) == "object")
+              for (var i = char[0]; i <= char[1]; i++)
+                chr[l.type].push(fromCharCode(i))
+          })
+        }
+      })
+
+      var res = ""
+      for (var i = 0; i < text.length; i++) {
+
+        Object.values(chr).forEach(c => c.sort(() => Math.random() - 0.5))
+
+        res += text.charAt(i)
+
+        if (chr.chr.length > 0) {
+          for (var j = 0; j < Math.floor(Math.random() * chr.chr.length * cursedness); j++)
+            res += chr.chr[j % chr.chr.length]
+        }
+
+        if (chr.sym.length > 0) {
+          for (var j = 0; j < Math.floor(Math.random() * Math.max(cursedness * 0.1, 2)); j++)
+            res += chr.sym[j % chr.sym.length]
+        }
+
+        if (chr.box.length > 0)
+          res += chr.box[0]
+      }
+      output.textContent = res
+    }
+
+    function fromCharCode(codePt) {
+      if (codePt > 0xFFFF) {
+        codePt -= 0x10000;
+        return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
+      } else {
+        return String.fromCharCode(codePt);
+      }
+    }
+  </script>
+
+</body>
+
+</html>
